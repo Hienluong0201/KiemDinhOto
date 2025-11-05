@@ -12,7 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import dynamic from "next/dynamic";
-
+import StationService from "../../services/SationService";
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
 export default function BanDoViPhamPage() {
@@ -22,8 +22,8 @@ export default function BanDoViPhamPage() {
   const [district, setDistrict] = useState("Tất cả");
   const [viPham, setViPham] = useState("Tất cả");
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [rating, setRating] = useState(0);
+  const [areas, setAreas] = useState([]);
+  const [loadingAreas, setLoadingAreas] = useState(true);
   const diemViPham = [
     { id: 1, ten_diem: "Ngã tư Hàng Xanh", lat: 10.8023, lng: 106.7136, city: "Hồ Chí Minh", district: "Bình Thạnh", muc_do: "Cao", vi_pham: ["Vượt đèn đỏ", "Vượt quá tốc độ"], dia_chi: "Điện Biên Phủ, Bình Thạnh", so_luong: 487 },
     { id: 2, ten_diem: "Cầu Sài Gòn", lat: 10.8027, lng: 106.7304, city: "Hồ Chí Minh", district: "Quận 2", muc_do: "Trung bình", vi_pham: ["Sử dụng điện thoại khi lái xe"], dia_chi: "Xa lộ Hà Nội, Quận 2", so_luong: 234 },
@@ -68,6 +68,30 @@ const handleSelectCity = (cityName) => {
   localStorage.setItem("hasVisitedMap", "true");
   setShowWelcome(false);
 };
+
+
+useEffect(() => {
+  const fetchAreas = async () => {
+    try {
+      setLoadingAreas(true);
+      console.log("🚀 Gọi API getAllStationArea...");
+      const data = await StationService.getAllStationArea();
+      console.log("📦 Dữ liệu trả về từ API:", data);
+      if (Array.isArray(data)) {
+        setAreas(data);
+        console.log(`✅ Nhận ${data.length} khu vực`);
+      } else {
+        console.warn("⚠️ Dữ liệu khu vực không hợp lệ:", data);
+      }
+    } catch (err) {
+      console.error("❌ Lỗi khi load khu vực:", err);
+    } finally {
+      setLoadingAreas(false);
+    }
+  };
+  fetchAreas();
+}, []);
+
 
   return (
   <Box
@@ -200,16 +224,16 @@ const handleSelectCity = (cityName) => {
       </Typography>
       {/* Phản ánh */}
       <Typography
-        component="button"
-        onClick={() => setShowFeedback(true)}
+        component="a"
+        href="https://zalo.me/ttdk2023"
+        target="_blank"
+        rel="noopener noreferrer"
         sx={{
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
           color: "#fff",
           fontWeight: 400,
           fontSize: "1rem",
           textDecoration: "none",
+          cursor: "pointer",
           "&:hover": { textDecoration: "underline", opacity: 0.9 },
         }}
       >
@@ -570,176 +594,94 @@ const handleSelectCity = (cityName) => {
         </Box>
       </Paper>
     )}
-    {showWelcome && (
-      <Box
-        sx={{
-          position: "fixed",
-          inset: 0,
-          backgroundColor: "rgba(0,0,0,0.6)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 2000,
-        }}
-      >
-        <Paper
-          sx={{
-            p: 4,
-            borderRadius: "16px",
-            width: 400,
-            textAlign: "center",
-          }}
-        >
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
-            Chào mừng bạn đến với
-          </Typography>
-          <Typography variant="subtitle1" sx={{ mb: 2 }}>
-            Bản đồ điểm nóng vi phạm
-          </Typography>
-          <Typography variant="body2" sx={{ mb: 3, color: "text.secondary" }}>
-            Vui lòng chọn khu vực bạn muốn xem
-          </Typography>
+{showWelcome && (
+  <Box
+    sx={{
+      position: "fixed",
+      inset: 0,
+      backgroundColor: "rgba(0,0,0,0.6)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1000,
+    }}
+  >
+    <Paper
+      sx={{
+        p: 4,
+        borderRadius: "16px",
+        width: 400,
+        textAlign: "center",
+        position: "relative",
+        zIndex: 2500, 
+      }}
+    >
+      <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+        Chào mừng bạn đến với
+      </Typography>
+      <Typography variant="subtitle1" sx={{ mb: 2 }}>
+        Bản đồ điểm nóng vi phạm
+      </Typography>
+      <Typography variant="body2" sx={{ mb: 3, color: "text.secondary" }}>
+        Vui lòng chọn khu vực bạn muốn xem
+      </Typography>
 
-          <Button
-            fullWidth
-            variant="contained"
+      {loadingAreas ? (
+        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          Đang tải danh sách khu vực...
+        </Typography>
+      ) : (
+        <FormControl fullWidth size="medium">
+          <Select
+            displayEmpty
+            defaultValue=""
+            onChange={(e) => handleSelectCity(e.target.value)}
+            MenuProps={{
+              container: document.body, // render menu ra ngoài popup
+              disablePortal: false, // cho phép hiển thị ngoài portal
+              PaperProps: {
+                sx: {
+                  maxHeight: 300,
+                  overflowY: "auto",
+                  mt: 1,
+                  borderRadius: "10px",
+                  backgroundColor: "#fff",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+                  zIndex: 9999, // ✅ nằm cao hơn tất cả (trên popup)
+                },
+              },
+              anchorOrigin: {
+                vertical: "bottom",
+                horizontal: "left",
+              },
+              transformOrigin: {
+                vertical: "top",
+                horizontal: "left",
+              },
+            }}
             sx={{
-              bgcolor: "#000",
-              color: "#fff",
-              mb: 2,
               borderRadius: "10px",
-              textTransform: "none",
-              py: 1.2,
-              "&:hover": { bgcolor: "#333" },
-            }}
-            onClick={() => handleSelectCity("Hà Nội")}
-          >
-            📍 Hà Nội
-          </Button>
-
-          <Button
-            fullWidth
-            variant="outlined"
-            sx={{
-              borderRadius: "10px",
-              textTransform: "none",
-              py: 1.2,
-            }}
-            onClick={() => handleSelectCity("Hồ Chí Minh")}
-          >
-            📍 Hồ Chí Minh
-          </Button>
-        </Paper>
-      </Box>
-    )}
-    {/* POPUP Phản hồi */}
-    {showFeedback && (
-      <Box
-        sx={{
-          position: "fixed",
-          inset: 0,
-          backgroundColor: "rgba(0,0,0,0.4)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 3000,
-        }}
-      >
-        <Paper
-          sx={{
-            width: 380,
-            p: 3,
-            borderRadius: "12px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 1,
+              bgcolor: "#f8f8f8",
+              textAlign: "left",
+              "& .MuiSelect-select": { py: 1.2 },
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Đánh giá tính năng
-            </Typography>
-            <Button
-              size="small"
-              sx={{ color: "text.secondary", textTransform: "none" }}
-              onClick={() => setShowFeedback(false)}
-            >
-              ✕
-            </Button>
-          </Box>
+            <MenuItem value="" disabled>
+              -- Chọn khu vực --
+            </MenuItem>
 
-          <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
-            Ý kiến của bạn giúp chúng tôi cải thiện sản phẩm tốt hơn
-          </Typography>
-
-          <Typography variant="body2" sx={{ mb: 1.5 }}>
-            Bạn cảm thấy hài lòng với tính năng Bản đồ điểm nóng vi phạm ở mức độ nào?
-          </Typography>
-
-          {/* ⭐ Dãy ngôi sao */}
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 1, mb: 2 }}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                onClick={() => setRating(star)}
-                style={{
-                  cursor: "pointer",
-                  fontSize: "28px",
-                  color: rating >= star ? "#FFD700" : "#ccc",
-                  transition: "0.2s",
-                }}
-              >
-                ★
-              </span>
+            {areas.map((area) => (
+              <MenuItem key={area.code} value={area.value}>
+                📍 {area.value}
+              </MenuItem>
             ))}
-          </Box>
+          </Select>
+        </FormControl>
+      )}
+    </Paper>
+  </Box>
+)}
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              color: "text.secondary",
-              fontSize: "0.8rem",
-              mb: 3,
-            }}
-          >
-            <span>Rất không hài lòng</span>
-            <span>Rất hài lòng</span>
-          </Box>
-
-          {/* Nút hành động */}
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-            <Button
-              variant="outlined"
-              onClick={() => setShowFeedback(false)}
-              sx={{ borderRadius: "8px", textTransform: "none" }}
-            >
-              Đóng
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "8px",
-                textTransform: "none",
-                bgcolor: "#1A33FF",
-                "&:hover": { bgcolor: "#1429cc" },
-              }}
-              onClick={() => {
-                alert(`Cảm ơn bạn! Bạn đã đánh giá ${rating} sao 🌟`);
-                setShowFeedback(false);
-              }}
-            >
-              Gửi phản hồi
-            </Button>
-          </Box>
-        </Paper>
-      </Box>
-    )}
   </Box>
   
 );

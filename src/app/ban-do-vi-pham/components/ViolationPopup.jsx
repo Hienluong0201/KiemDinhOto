@@ -1,5 +1,8 @@
-import { Box, Paper, Button, Typography } from "@mui/material";
-import { colors, spacing, radius, shadows } from "@/constants/theme";
+"use client";
+
+import { Box, Paper, Typography } from "@mui/material";
+import BaseButton from "@/components/common/BaseButton"; 
+import { colors, radius, shadows } from "@/constants/theme";
 
 export default function ViolationPopup({ open, onClose, diem, danhSach }) {
   if (!open) return null;
@@ -15,8 +18,8 @@ export default function ViolationPopup({ open, onClose, diem, danhSach }) {
         width: 480,
         maxHeight: "80vh",
         overflow: "hidden",
-        borderRadius: `${radius.lg}px`, // 16px
-        boxShadow: shadows.heavy, // "0 8px 24px rgba(0,0,0,0.2)"
+        borderRadius: `${radius.lg}px`,
+        boxShadow: shadows.heavy,
         zIndex: 2000,
         display: "flex",
         flexDirection: "column",
@@ -28,7 +31,7 @@ export default function ViolationPopup({ open, onClose, diem, danhSach }) {
       <Box
         sx={{
           p: 2,
-          borderBottom: "1px solid #eee",
+          borderBottom: `1px solid ${colors.palette.grey100}`,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
@@ -37,52 +40,49 @@ export default function ViolationPopup({ open, onClose, diem, danhSach }) {
         <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
           Danh sách vi phạm - {diem.ten_diem}
         </Typography>
-        <Button
+        <BaseButton
+          type="subtle"
           size="small"
           onClick={onClose}
           sx={{
-            textTransform: "none",
-            color: "text.secondary",
+            color: colors.textDim,
             fontSize: "1rem",
             minWidth: "auto",
-            "&:hover": { color: "#E53935" },
+            px: 1,
+            "&:hover": { color: colors.palette.error500 },
           }}
         >
           ✕
-        </Button>
+        </BaseButton>
       </Box>
 
       {/* Thanh chức năng */}
-      <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
-        <Button
-          fullWidth
-          variant="outlined"
+      <Box sx={{ p: 2, borderBottom: `1px solid ${colors.palette.grey100}` }}>
+        <BaseButton
+          type="subtle"
           size="small"
+          fullWidth
           sx={{
             mb: 1,
-            borderRadius: "10px",
-            textTransform: "none",
+            borderRadius: radius.md,
             justifyContent: "flex-start",
             fontSize: "0.85rem",
           }}
         >
           🔍 Kiểm tra biển số của bạn
-        </Button>
-        <Button
-          fullWidth
-          variant="contained"
+        </BaseButton>
+
+        <BaseButton
+          type="primary"
           size="small"
+          fullWidth
           sx={{
-            borderRadius: "10px",
-            bgcolor: "#1A33FF",
-            color: "#fff",
-            textTransform: "none",
+            borderRadius: radius.md,
             fontSize: "0.85rem",
-            "&:hover": { bgcolor: "#1429CC" },
           }}
         >
           Nhận thông báo qua Zalo khi có lỗi mới (Miễn phí)
-        </Button>
+        </BaseButton>
       </Box>
 
       {/* Danh sách */}
@@ -93,7 +93,7 @@ export default function ViolationPopup({ open, onClose, diem, danhSach }) {
           p: 2,
           "&::-webkit-scrollbar": { width: "6px" },
           "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#ccc",
+            backgroundColor: colors.palette.grey300,
             borderRadius: "8px",
           },
         }}
@@ -107,7 +107,12 @@ export default function ViolationPopup({ open, onClose, diem, danhSach }) {
           }}
         >
           <thead>
-            <tr style={{ borderBottom: "2px solid #ddd", textAlign: "left" }}>
+            <tr
+              style={{
+                borderBottom: `2px solid ${colors.palette.grey200}`,
+                textAlign: "left",
+              }}
+            >
               <th style={{ padding: "8px" }}>Biển số xe</th>
               <th style={{ padding: "8px" }}>Loại vi phạm</th>
               <th style={{ padding: "8px" }}>Thời gian</th>
@@ -118,7 +123,7 @@ export default function ViolationPopup({ open, onClose, diem, danhSach }) {
               <tr
                 key={index}
                 style={{
-                  borderBottom: "1px solid #eee",
+                  borderBottom: `1px solid ${colors.palette.grey100}`,
                 }}
               >
                 <td style={{ padding: "8px" }}>{item.bienSo}</td>

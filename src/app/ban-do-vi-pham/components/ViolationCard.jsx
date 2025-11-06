@@ -1,5 +1,8 @@
-import { Box, Paper, Typography, Button } from "@mui/material";
+"use client";
+
+import { Box, Paper, Typography } from "@mui/material";
 import { colors, spacing, radius, shadows } from "@/constants/theme";
+import BaseButton from "@/components/common/BaseButton"; 
 
 export default function ViolationCard({ diem, selected, onSelect, onViewDetail }) {
   return (
@@ -9,9 +12,9 @@ export default function ViolationCard({ diem, selected, onSelect, onViewDetail }
       sx={{
         p: 2,
         mb: 1.5,
-        borderRadius: "12px",
+        
         borderColor: selected ? colors.palette.brand500 : colors.border,
-        bgcolor: colors.palette.white, // luôn trắng
+        bgcolor: colors.palette.white,
         cursor: "pointer",
         transition: "all 0.25s ease",
         boxShadow: selected ? shadows.medium : shadows.light,
@@ -54,7 +57,7 @@ export default function ViolationCard({ diem, selected, onSelect, onViewDetail }
           sx={{
             px: 1.4,
             py: 0.35,
-            borderRadius: "6px",
+            borderRadius: radius.sm,
             fontWeight: 600,
             fontSize: "0.75rem",
             color: colors.palette.white,
@@ -119,35 +122,25 @@ export default function ViolationCard({ diem, selected, onSelect, onViewDetail }
         )}
       </Box>
 
-      {/* Nút xem danh sách */}
-      <Button
-        variant="outlined"
+      {/* ✅ Nút xem danh sách (dùng BaseButton) */}
+      <BaseButton
+        type="outline"
         size="small"
+        fullWidth
         onClick={(e) => {
           e.stopPropagation();
           onViewDetail(diem);
         }}
-        fullWidth
         sx={{
           mt: 0.5,
-          textTransform: "none",
-          borderRadius: "10px",
-          borderColor: colors.border,
-          fontSize: "0.8rem",
           fontWeight: 500,
-          color: colors.text,
-          py: 0.7,
-          bgcolor: colors.palette.white,
-          transition: "all 0.2s ease",
-          "&:hover": {
-            borderColor: colors.palette.brand500,
-            color: colors.palette.brand500,
-            bgcolor: colors.palette.brand50,
-          },
+          borderRadius: radius.md,
+          border: `1px solid ${colors.border}`,
+          fontSize: "0.8rem",
         }}
       >
         Xem danh sách bị phạt
-      </Button>
+      </BaseButton>
     </Paper>
   );
 }

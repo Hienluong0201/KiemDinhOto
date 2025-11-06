@@ -1,6 +1,12 @@
-import { Box, Typography, FormControl, Select, MenuItem } from "@mui/material";
-import { colors, radius, shadows } from "@/constants/theme";
+"use client";
 
+import { Box, Typography, FormControl, MenuItem } from "@mui/material";
+import { colors, radius, shadows } from "@/constants/theme";
+import  BaseSelect  from "../../../components/common/BaseSelect";
+import  BaseButton  from "../../../components/common/BaseButton";
+/**
+ * Bộ lọc hiển thị điểm vi phạm — dùng BaseSelect để đồng bộ style
+ */
 export default function FilterPanel({
   city,
   setCity,
@@ -16,9 +22,9 @@ export default function FilterPanel({
       sx={{
         mb: 2,
         p: 1.5,
-        bgcolor: colors.palette.white, 
-        borderRadius: `${radius.md + 2}px`, 
-        boxShadow: shadows.light, 
+        bgcolor: colors.palette.white,
+        borderRadius: `${radius.md + 2}px`,
+        boxShadow: shadows.light,
         position: "sticky",
         top: 0,
         zIndex: 10,
@@ -37,39 +43,21 @@ export default function FilterPanel({
           {filtered?.length || 0} điểm vi phạm
         </Typography>
         <FormControl size="small">
-          <Select
-            value="50"
-            displayEmpty
-            sx={{
-              borderRadius: `${radius.md}px`, // 10px
-              fontSize: "0.8rem",
-              "& .MuiSelect-select": { py: 0.6, px: 1.5 },
-            }}
-          >
+          <BaseSelect value="50" displayEmpty size="small">
             <MenuItem value="50">50 điểm</MenuItem>
             <MenuItem value="100">100 điểm</MenuItem>
-          </Select>
+          </BaseSelect>
         </FormControl>
       </Box>
 
       {/* --- Hàng 1: Thành phố + Quận --- */}
       <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-        <FormControl fullWidth size="small" sx={{ flex: 1 }}>
-          <Select
+        <FormControl fullWidth size="small">
+          <BaseSelect
             value={city}
             onChange={(e) => setCity(e.target.value)}
             displayEmpty
-            sx={{
-              borderRadius: `${radius.md}px`,
-              fontSize: "0.8rem",
-              "& .MuiSelect-select": { py: 0.7 },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.border,
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.tint,
-              },
-            }}
+            size="small"
           >
             <MenuItem value="Tất cả">Tất cả thành phố</MenuItem>
             {[...new Set(diemViPham.map((d) => d.city))].map((c) => (
@@ -77,25 +65,15 @@ export default function FilterPanel({
                 {c}
               </MenuItem>
             ))}
-          </Select>
+          </BaseSelect>
         </FormControl>
 
-        <FormControl fullWidth size="small" sx={{ flex: 1 }}>
-          <Select
+        <FormControl fullWidth size="small">
+          <BaseSelect
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
             displayEmpty
-            sx={{
-              borderRadius: `${radius.md}px`,
-              fontSize: "0.8rem",
-              "& .MuiSelect-select": { py: 0.7 },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.border,
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: colors.tint,
-              },
-            }}
+            size="small"
           >
             <MenuItem value="Tất cả">Tất cả quận/huyện</MenuItem>
             {[...new Set(diemViPham.map((d) => d.district))].map((q) => (
@@ -103,27 +81,17 @@ export default function FilterPanel({
                 {q}
               </MenuItem>
             ))}
-          </Select>
+          </BaseSelect>
         </FormControl>
       </Box>
 
       {/* --- Hàng 2: Loại vi phạm --- */}
       <FormControl fullWidth size="small">
-        <Select
+        <BaseSelect
           value={viPham}
           onChange={(e) => setViPham(e.target.value)}
           displayEmpty
-          sx={{
-            borderRadius: `${radius.md}px`,
-            fontSize: "0.8rem",
-            "& .MuiSelect-select": { py: 0.7 },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: colors.border,
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: colors.tint,
-            },
-          }}
+          size="small"
         >
           <MenuItem value="Tất cả">Tất cả loại vi phạm</MenuItem>
           {[...new Set(diemViPham.flatMap((d) => d.vi_pham))].map((v) => (
@@ -131,8 +99,15 @@ export default function FilterPanel({
               {v}
             </MenuItem>
           ))}
-        </Select>
+        </BaseSelect>
       </FormControl>
+
+      {/* --- Nút hành động (ví dụ thêm) --- */}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+        <BaseButton type="primary" size="small">
+          Áp dụng lọc
+        </BaseButton>
+      </Box>
     </Box>
   );
 }

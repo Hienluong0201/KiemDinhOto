@@ -29,4 +29,23 @@ export default class StationService {
       throw error;
     }
   }
+ static async getAllStationArea() {
+    try {
+      const result = await Request.send({
+        method: "POST",
+        path: "/Stations/user/getAllStationArea", 
+      });
+
+      if (result?.statusCode === 200) {
+        console.log("✅ Khu vực trả về:", result.data);
+        return result.data;
+      } else {
+        console.error("❌ API trả về lỗi:", result);
+        throw result;
+      }
+    } catch (error) {
+      console.error("💥 Lỗi khi lấy khu vực:", error);
+      throw error;
+    }
+  }
 }

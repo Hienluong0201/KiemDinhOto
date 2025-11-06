@@ -1,57 +1,61 @@
+"use client";
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/navigation";
 import Footer from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Paper } from "@mui/material";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata = {
-  title: "Tra cứu phạt nguội trực tuyến - Thông báo phạt nguội nhanh chóng",
-  description:
-    "Cung cấp dịch vụ tra cứu phạt nguội và thông báo phạt nguội chính xác, nhanh chóng.",
-  keywords:
-    "tra cứu phạt nguội, thông báo phạt nguội, dịch vụ trực tuyến, giao thông, vi phạm giao thông",
-  icons: {
-    icon: "/favicon.ico", // hoặc favicon.png nếu bạn dùng png
-  },
-};
-
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+  const isMapPage = pathname === "/ban-do-vi-pham";
+
   return (
-    <html lang="vi">
-      <body className={inter.className}>
+    <html lang="vi" suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex flex-col min-h-screen">
-            <Navigation />
-            <div
-              className="flex-grow translate-y-0 transition-transform duration-300 ease-in-out"
-              style={{ marginTop: "16px" }}
+          {!isMapPage && <Navigation />}
+
+          <div
+            className="flex-grow"
+            style={{
+              marginTop: isMapPage ? 0 : 16,
+            }}
+          >
+            <main
+              className={
+                isMapPage
+                  ? "w-full h-screen"
+                  : "max-w-[800px] w-full mx-auto px-4"
+              }
             >
-              <main className="max-w-[800px] w-full mx-auto px-4">
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 2,
-                    pt: 0,
-                    width: "100%",
-                    borderRadius: 2,
-                    overflow: "hidden",
-                    boxShadow: "none",
-                  }}
-                >
-                  {children}
-                </Paper>
-              </main>
-            </div>
-            <Footer />
+              <Paper
+                elevation={isMapPage ? 0 : 3}
+                sx={{
+                  p: isMapPage ? 0 : 2,
+                  pt: 0,
+                  width: "100%",
+                  height: isMapPage ? "100vh" : "auto",
+                  borderRadius: isMapPage ? 0 : 2,
+                  overflow: "hidden",
+                  boxShadow: isMapPage ? "none" : "default",
+                }}
+              >
+                {children}
+              </Paper>
+            </main>
           </div>
+
+          {!isMapPage && <Footer />}
         </ThemeProvider>
       </body>
     </html>

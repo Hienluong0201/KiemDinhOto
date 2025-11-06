@@ -114,6 +114,7 @@ function send({
     if (dataString && isUsingToken) {
       const newData = JSON.parse(dataString);
       headers.authorization = `Bearer ${newData.token}`;
+       console.log("🔑 Token hiện tại:", newData.token);
     }
     if (token && isUsingToken) {
       headers.authorization = `Bearer ${token}`;
@@ -197,7 +198,6 @@ function send({
       });
   });
 }
-
 export default {
   send,
 };

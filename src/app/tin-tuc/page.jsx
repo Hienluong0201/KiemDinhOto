@@ -123,30 +123,22 @@ export default function NewsPage() {
     skip: 0,
   });
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        setLoading(true);
-        const response = await StationService.getNewsPenaltyList({ ...filter });
-        const { statusCode, data } = response;
+useEffect(() => {
+  const fetchAreas = async () => {
+    try {
+      const areas = await StationService.getAllStationArea();
+      console.log("✅ Danh sách khu vực:", areas);
+    } catch (error) {
+      console.error("💥 Lỗi khi gọi getAllStationArea:", error);
+    }
+  };
 
-        if (statusCode === 200) {
-          setNews(data?.data || []);
-          setTotalPages(
-            Math.ceil((data?.data?.length || 0) / filter.limit) || 1
-          );
-        } else {
-          console.warn("Unexpected status code:", statusCode);
-        }
-      } catch (error) {
-        console.error("Error fetching news:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Chỉ gọi sau khi client render
+  if (typeof window !== "undefined") {
+    fetchAreas();
+  }
+}, []);
 
-    fetchNews();
-  }, [page]);
 
   const handlePageChange = (event, value) => {
     setFilter((prev) => ({
